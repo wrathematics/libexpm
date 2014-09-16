@@ -18,22 +18,37 @@ Copyright 2013-2014, Drew Schmidt.  All rights reserved.
 | Introduction |
 \______________/
 
+libexpm is a portable C library for computing matrix exponentials
+of dense matrices.
+
+
+ __________
+/          \
+| Building |
+\__________/
+
+To build the library, you will need:
+
+  * Cmake 2.6
+  * BLAS and LAPACK libraries.
+  * R >= 2.15.0 if building the R/ subtree.
+
+Build with make.  Both shared and static libraries will be produced
+in the build/ tree.
+
+
  _________
 /         \
 | License |
 \_________/
 
-
-See the file LICENSE for more details.
-
- _________________________
-/                         \
-| Accuracy and Efficiency |
-\_________________________/
+The library is released under the 2-clause BSD license.  See the 
+file LICENSE for more details.
 
 
  ____________________________
 /                            \
 | Routines and Documentation |
 \____________________________/
+
 
