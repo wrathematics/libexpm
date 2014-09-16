@@ -44,7 +44,7 @@ void matcopy(int n, double *A, double *B)
 {
   char uplo = 'A';
   
-  dlacpy_(&uplo, &n, &n, A, &n, B, &n);
+  F77_NAME(dlacpy)(&uplo, &n, &n, A, &n, B, &n);
 }
 
 
@@ -106,7 +106,7 @@ void matprod(int n, double *a, double *b, double *c)
   char trans = 'N';
   double one = 1.0, zero = 0.0;
   
-  dgemm_(&trans, &trans, &n, &n, &n, &one, a, &n, b, &n, &zero, c, &n);
+  F77_NAME(dgemm)(&trans, &trans, &n, &n, &n, &one, a, &n, b, &n, &zero, c, &n);
 }
 
 
@@ -130,7 +130,7 @@ void matvecprod(bool trans, int pow, int n, double *a, double *b, double *c)
   
   if (pow == 1)
   {
-    dgemm_(&transa, &notrans, &n, &ione, &n, &one, a, &n, b, &n, &zero, c, &n);
+    F77_NAME(dgemm)(&transa, &notrans, &n, &ione, &n, &one, a, &n, b, &n, &zero, c, &n);
     return;
   }
   
@@ -139,12 +139,12 @@ void matvecprod(bool trans, int pow, int n, double *a, double *b, double *c)
   
   for (i=0; i<pow-extra; i++)
   {
-    dgemm_(&transa, &notrans, &n, &ione, &n, &one, a, &n, tmp, &n, &zero, c, &n);
-    dgemm_(&transa, &notrans, &n, &ione, &n, &one, a, &n, c, &n, &zero, tmp, &n);
+    F77_NAME(dgemm)(&transa, &notrans, &n, &ione, &n, &one, a, &n, tmp, &n, &zero, c, &n);
+    F77_NAME(dgemm)(&transa, &notrans, &n, &ione, &n, &one, a, &n, c, &n, &zero, tmp, &n);
   }
   
   if (extra)
-    dgemm_(&transa, &notrans, &n, &ione, &n, &one, a, &n, tmp, &n, &zero, c, &n);
+    F77_NAME(dgemm)(&transa, &notrans, &n, &ione, &n, &one, a, &n, tmp, &n, &zero, c, &n);
   else
     matcopy(n, tmp, c);
   
