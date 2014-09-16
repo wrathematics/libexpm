@@ -27,6 +27,7 @@
 #include <math.h>
 
 #include "expm.h"
+#include "utils.h"
 
 
 
@@ -121,38 +122,14 @@ const double matexp_pade_coefs[14] =
    and q_m(x) = p_m(-x)
 */
 
-// Workhorse for matexp_pade
-static void matexp_pade_fillmats(const int m, const int n, const int i, double *N, double *D, double *B, double *C)
-{
-  int j;
-  const double tmp = matexp_pade_coefs[i];
-  double tmpj;
-  const int sgn = SGNEXP(-1, i);
-  
-    /* Performs the following actions:
-        B = C
-        N = pade_coef[i] * C
-        D = (-1)^j * pade_coef[i] * C
-    */
-    for (j=0; j<m*n; j++)
-    {
-      tmpj = C[j];
-      B[j] = tmpj;
-      
-      tmpj *= tmp;
-      
-      N[j] += tmpj;
-      D[j] += sgn*tmpj;
-    }
-}
-
-
 
 // Exponentiation via Pade' expansion
 static void matexp_pade(int n, const int p, double *A, double *N)
 {
-  int i, info = 0;
+  int i, j, info = 0;
   int *ipiv;
+  int sgn;
+  double tmp, tmpj;
   double *B, *C, *D;
   
   // Power of A
@@ -192,7 +169,24 @@ static void matexp_pade(int n, const int p, double *A, double *N)
       matprod(n, A, B, C);
     
     // Update matrices
-    matexp_pade_fillmats(n, n, i, N, D, B, C);
+    sgn = SGNEXP(-1, i);
+    tmp = matexp_pade_coefs[i];
+    
+    /* Performs the following actions:
+        B = C
+        N = pade_coef[i] * C
+        D = (-1)^j * pade_coef[i] * C
+    */
+    for (j=0; j<n*n; j++)
+    {
+      tmpj = C[j];
+      B[j] = tmpj;
+      
+      tmpj *= tmp;
+      
+      N[j] += tmpj;
+      D[j] += sgn*tmpj;
+    }
   }
   
   // R <- inverse(D) %*% N

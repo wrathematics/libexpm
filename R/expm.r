@@ -10,7 +10,7 @@ expm <- function(x, p=6)
   if (!is.double(x))
     storage.mode(x) <- "double"
   
-  exp <- .Call("R_matexp", x, as.integer(p))
+  exp <- .Call("R_expm", x, as.integer(p))
   
   return( exp )
 }

@@ -1,4 +1,4 @@
-dyn.load("expm.so")
+dyn.load("expm_wrap.so")
 source("expm.r")
 
 n <- 500
