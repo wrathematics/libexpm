@@ -1,106 +1,32 @@
 /* Copyright (C) 2013-2014 Drew Schmidt. All rights reserved.
 
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions are met:
+  
+    * Redistributions of source code must retain the above copyright notice, 
+      this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice,
+      this list of conditions and the following disclaimer in the documentation
+      and/or other materials provided with the distribution.
+  
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
+  FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-  * Redistributions of source code must retain the above copyright notice, this
-    list of conditions and the following disclaimer.
-  * Redistributions in binary form must reproduce the above copyright notice,
-    this list of conditions and the following disclaimer in the documentation
-    and/or other materials provided with the distribution.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
-
-
-/* Matrix exponentiation algorithm from:
-   "New Scaling and Squaring Algorithm for the Matrix Exponential", by
-   Awad H. Al-Mohy and Nicholas J. Higham, August 2009
-*/
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
 #include <math.h>
 
-#include <R.h>
-#include <Rinternals.h>
-
 #include "expm.h"
-
-
-// -------------------------------------------------------- 
-// Utilities
-// -------------------------------------------------------- 
-
-// C = A * B for square matrices
-static void matprod(int n, double *a, double *b, double *c)
-{
-  char trans = 'N';
-  double one = 1.0, zero = 0.0;
-  
-  dgemm_(&trans, &trans, &n, &n, &n, &one, a, &n, b, &n, &zero, c, &n);
-}
-
-
-
-// Copy A ONTO B, i.e. B = A
-static inline void matcopy(int n, double *A, double *B)
-{
-  char uplo = 'A';
-  
-  dlacpy_(&uplo, &n, &n, A, &n, B, &n);
-}
-
-
-
-// Identity matrix
-static inline void mateye(const unsigned int n, double *a)
-{
-  int i;
-  
-  for (i=0; i<n*n; i++)
-    a[i] = 0.0;
-  
-  i = 0;
-  while (i < n*n)
-  {
-    a[i] = 1.0;
-    i += n+1;
-  }
-}
-
-
-
-// 1-norm for a square matrix
-static double matnorm_1(const double *x, const int n)
-{
-  int i, j;
-  double norm = 0;
-  double tmp;
-  
-  // max(colSums(abs(x))) 
-  for (j=0; j<n; j++)
-  {
-    tmp = 0;
-    
-    for (i=0; i<n; i++)
-      tmp += fabs(x[i + j*n]);
-    
-    if (tmp > norm)
-      norm = tmp;
-  }
-  
-  return norm;
-}
 
 
 
@@ -196,7 +122,7 @@ const double matexp_pade_coefs[14] =
 */
 
 // Workhorse for matexp_pade
-void matexp_pade_fillmats(const int m, const int n, const int i, double *N, double *D, double *B, double *C)
+static void matexp_pade_fillmats(const int m, const int n, const int i, double *N, double *D, double *B, double *C)
 {
   int j;
   const double tmp = matexp_pade_coefs[i];
@@ -320,32 +246,4 @@ void matexp(int n, const int p, double *x, double *ret)
   matpow_by_squaring(x, n, m, ret);
 }
 
-
-
-// -------------------------------------------------------- 
-// R Wrapper
-// -------------------------------------------------------- 
-
-SEXP R_matexp(SEXP x, SEXP p)
-{
-  const int n = nrows(x);
-  int i;
-  double *x_cp;
-  SEXP R;
-  
-  PROTECT(R = allocMatrix(REALSXP, n, n));
-  
-  x_cp = malloc(n*n*sizeof(x_cp));
-  
-  for (i=0; i<n*n; i++)
-    x_cp[i] = REAL(x)[i];
-  
-  
-  matexp(n, INTEGER(p)[0], x_cp, REAL(R));
-  
-  free(x_cp);
-  
-  UNPROTECT(1);
-  return R;
-}
 

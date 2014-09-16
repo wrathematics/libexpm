@@ -1,0 +1,11 @@
+*.out
+*.o
+*.mod
+*.so
+*.a
+*.log
+*.status
+*~
+
+build/*
+
