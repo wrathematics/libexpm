@@ -1,7 +1,7 @@
 dyn.load("expm_wrap.so")
 source("expm.r")
 
-n <- 500
+n <- 250
 x <- matrix(rnorm(n*n), n, n)
 
 t1 <- system.time(exp1 <- expm(x))[3]

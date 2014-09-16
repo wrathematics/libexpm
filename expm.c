@@ -28,7 +28,7 @@
 
 #include "expm.h"
 #include "utils.h"
-
+#include "lapack.h"
 
 
 #define NTHETA 5
@@ -38,7 +38,7 @@ static int matexp_scale_factor(const double *x, const int n)
   int i;
   const double theta[] = {1.5e-2, 2.5e-1, 9.5e-1, 2.1e0, 5.4e0};
   
-  const double x_1 = matnorm_1(x, n);
+  const double x_1 = matnorm_1(x, n, n);
   
   for (i=0; i<NTHETA; i++)
   {
@@ -217,7 +217,7 @@ static void matexp_pade(int n, const int p, double *A, double *N)
   ret     On exit, ret = expm(x).
 */
 
-void matexp(int n, const int p, double *x, double *ret)
+void matexp(const int p, const int n, double *x, double *ret)
 {
   int m;
   int nn = n*n;

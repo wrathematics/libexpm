@@ -6,4 +6,4 @@ expm:
 .PHONY: expm
 
 clean:
-	rm -rf expm.so expm.o
+	rm -rf *.so *.o

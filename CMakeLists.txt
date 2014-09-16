@@ -1,15 +1,15 @@
 cmake_minimum_required(VERSION 2.6)
-project(expm)
+project(libexpm)
 enable_language(C)
 
 
 ### Flags
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wfatal-errors -O3 -fPIC")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -O3 -fPIC")
 
 
 ### External dependencies
-find_package(LAPACK REQUIRED)
 find_package(BLAS REQUIRED)
+find_package(LAPACK REQUIRED)
 
 #find_package(OpenMP)
 #if (OPENMP_FOUND)
@@ -19,25 +19,25 @@ find_package(BLAS REQUIRED)
 
 
 ### Source files
-set(EXPM_FILES
+set(LIBEXPM_FILES
   expm.c
   utils.c
 )
 
 
 ### Make and install
-add_library(expm SHARED ${EXPM_FILES})
-add_library(expm_static STATIC ${EXPM_FILES})
+add_library(libexpm SHARED ${LIBEXPM_FILES})
+add_library(expm_static STATIC ${LIBEXPM_FILES})
 
 
-target_link_libraries (expm ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES})
+target_link_libraries (libexpm ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES})
 
-set_target_properties(expm PROPERTIES PREFIX "")
+set_target_properties(libexpm PROPERTIES PREFIX "")
 if(NOT WIN32)
-  set_target_properties(expm PROPERTIES SUFFIX ".so")
-  install(TARGETS expm LIBRARY DESTINATION ${CMAKE_SOURCE_DIR})
+  set_target_properties(libexpm PROPERTIES SUFFIX ".so")
+  install(TARGETS libexpm LIBRARY DESTINATION ${CMAKE_SOURCE_DIR})
 else(NOT WIN32)
-  install(TARGETS expm RUNTIME DESTINATION ${CMAKE_SOURCE_DIR})
+  install(TARGETS libexpm RUNTIME DESTINATION ${CMAKE_SOURCE_DIR})
 endif(NOT WIN32)
 
 

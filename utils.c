@@ -31,13 +31,16 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
+#include "lapack.h"
+#include "utils.h"
+
 
 // ---------------------------------------------------------
 // Misc
 // ---------------------------------------------------------
 
 // Copy A ONTO B, i.e. B = A
-inline void matcopy(int n, double *A, double *B)
+void matcopy(int n, double *A, double *B)
 {
   char uplo = 'A';
   
@@ -47,7 +50,7 @@ inline void matcopy(int n, double *A, double *B)
 
 
 // Identity matrix
-inline void mateye(const unsigned int n, double *a)
+void mateye(const unsigned int n, double *a)
 {
   int i;
   
@@ -68,22 +71,9 @@ inline void mateye(const unsigned int n, double *a)
 // Explicit 1-Norms
 // ---------------------------------------------------------
 
-// 1-norm for a vector
-inline double vecnorm_1(const double *v, const int n)
-{
-  int i;
-  double norm = 0;
-  
-  for (i=0; i<n; i++)
-    norm += fabs(v[i]);
-  
-  return norm;
-}
 
-
-
-// 1-norm for a square matrix
-double matnorm_1(const double *x, const int n)
+// Full 1-norm
+double matnorm_1(const double *x, const int m, const int n)
 {
   int i, j;
   double norm = 0;
@@ -94,7 +84,7 @@ double matnorm_1(const double *x, const int n)
   {
     tmp = 0;
     
-    for (i=0; i<n; i++)
+    for (i=0; i<m; i++)
       tmp += fabs(x[i + j*n]);
     
     if (tmp > norm)
@@ -140,7 +130,7 @@ void matvecprod(bool trans, int pow, int n, double *a, double *b, double *c)
   
   if (pow == 1)
   {
-    dgemm_(&transa, &notrans, &n, &ione, &n, &one, a, &n, tmp, &n, &zero, c, &n);
+    dgemm_(&transa, &notrans, &n, &ione, &n, &one, a, &n, b, &n, &zero, c, &n);
     return;
   }
   
