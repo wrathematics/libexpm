@@ -42,7 +42,7 @@ SEXP R_expm(SEXP x, SEXP p)
     x_cp[i] = REAL(x)[i];
   
   
-  matexp(n, INTEGER(p)[0], x_cp, REAL(R));
+  matexp(INTEGER(p)[0], n, x_cp, REAL(R));
   
   free(x_cp);
   

@@ -44,6 +44,7 @@ void matcopy(int n, double *A, double *B)
 {
   char uplo = 'A';
   
+  
   F77_NAME(dlacpy)(&uplo, &n, &n, A, &n, B, &n);
 }
 
@@ -53,6 +54,7 @@ void matcopy(int n, double *A, double *B)
 void mateye(const unsigned int n, double *a)
 {
   int i;
+  
   
   for (i=0; i<n*n; i++)
     a[i] = 0.0;
@@ -76,8 +78,9 @@ void mateye(const unsigned int n, double *a)
 double matnorm_1(const double *x, const int m, const int n)
 {
   int i, j;
-  double norm = 0;
+  double norm = -1.;
   double tmp;
+  
   
   // max(colSums(abs(x))) 
   for (j=0; j<n; j++)
@@ -85,7 +88,7 @@ double matnorm_1(const double *x, const int m, const int n)
     tmp = 0;
     
     for (i=0; i<m; i++)
-      tmp += fabs(x[i + j*n]);
+      tmp += fabs(x[i + j*m]);
     
     if (tmp > norm)
       norm = tmp;
@@ -105,6 +108,7 @@ void matprod(int n, double *a, double *b, double *c)
 {
   char trans = 'N';
   double one = 1.0, zero = 0.0;
+  
   
   F77_NAME(dgemm)(&trans, &trans, &n, &n, &n, &one, a, &n, b, &n, &zero, c, &n);
 }

@@ -4,11 +4,6 @@
 
 #include <stdbool.h>
 
-#ifdef HAVE_F77_UNDERSCORE
-  #define F77_NAME(x) x ## _
-#else
-  #define F77_NAME(x) x
-#endif
 
 #define SGN(x) (x>=0?1:-1)
 #define SGNEXP(x,pow) (x==0?(pow==0?1:0):(x>0?1:(pow%2==0?1:(-1))))
