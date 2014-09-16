@@ -27,6 +27,11 @@
 */
 
 
+#include <math.h>
+#include <stdbool.h>
+#include <stdlib.h>
+
+
 // ---------------------------------------------------------
 // Misc
 // ---------------------------------------------------------
@@ -70,7 +75,7 @@ inline double vecnorm_1(const double *v, const int n)
   double norm = 0;
   
   for (i=0; i<n; i++)
-    norm += fabs(x[i + j*n]);
+    norm += fabs(v[i]);
   
   return norm;
 }
