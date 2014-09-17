@@ -22,6 +22,7 @@ find_package(LAPACK REQUIRED)
 set(LIBEXPM_FILES
   src/expm.c
   src/utils.c
+  src/normest.c
 )
 
 file(GLOB src_h src/*.h)

@@ -2,8 +2,7 @@ CFLAGS = -I../build/include
 LDFLAGS = -lblas -llapack -L../build/ -lexpm_static
 
 expm:
-	R CMD COMPILE expm_wrap.c CFLAGS=$(CFLAGS); \
-	R CMD SHLIB expm_wrap.o $(LDFLAGS)
+	MAKEFLAGS='CFLAGS=${CFLAGS}' R CMD SHLIB expm_wrap.c $(LDFLAGS)
 
 .PHONY: expm
 
