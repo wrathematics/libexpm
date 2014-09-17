@@ -54,7 +54,7 @@ static inline double vecvecprod(int n, double *x, double *y)
 
 
 // Algorithm 2.1 from the Higham and Tisseur paper
-#define ITMAX 9
+#define ITERMAX 9
 
 double normest(const int pow, const int n, double *A)
 {
@@ -77,7 +77,7 @@ double normest(const int pow, const int n, double *A)
   for (i=0; i<n; i++)
     x[i] = tmp;
   
-  while (k < ITMAX)
+  while (k < ITERMAX)
   {
     // y = A^pow x
     matvecprod(false, pow, n, A, x, y);
@@ -91,7 +91,7 @@ double normest(const int pow, const int n, double *A)
     // z = t(A)^pow s
     matvecprod(true, pow, n, A, s, y);
     
-    znorm = vecnorm_inf(n, y, &ind)
+    znorm = vecnorm_inf(n, y, &ind);
     ztx = vecvecprod(n, y, x);
     
     if (znorm < ztx && k > 0)
