@@ -18,8 +18,12 @@ Copyright 2013-2014, Drew Schmidt.  All rights reserved.
 | Introduction |
 \______________/
 
-libexpm is a portable C library for computing matrix exponentials
-of dense matrices.
+libexpm is a portable, high-performance C library for computing
+the matrix exponential of a dense matrix.
+
+Formally, a matrix exponential is the power series:
+
+  expm(X) = I + X/1! + X^2/2! + X^3/3! + ...
 
 
  __________
