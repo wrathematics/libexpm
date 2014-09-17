@@ -1,5 +1,5 @@
-#ifndef EXPM_UTILS_H
-#define EXPM_UTILS_H
+#ifndef LIBEXPM_UTILS_H
+#define LIBEXPM_UTILS_H
 
 
 #include <stdbool.h>

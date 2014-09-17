@@ -20,9 +20,12 @@ find_package(LAPACK REQUIRED)
 
 ### Source files
 set(LIBEXPM_FILES
-  expm.c
-  utils.c
+  src/expm.c
+  src/utils.c
 )
+
+file(GLOB src_h src/*.h)
+execute_process(COMMAND echo ${src_h})
 
 
 ### Make and install
@@ -35,10 +38,11 @@ target_link_libraries (libexpm ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES})
 set_target_properties(libexpm PROPERTIES PREFIX "")
 if(NOT WIN32)
   set_target_properties(libexpm PROPERTIES SUFFIX ".so")
-  install(TARGETS libexpm LIBRARY DESTINATION ${CMAKE_SOURCE_DIR})
+  install(TARGETS libexpm LIBRARY DESTINATION ${CMAKE_SOURCE_DIR}/build/lib)
 else(NOT WIN32)
-  install(TARGETS libexpm RUNTIME DESTINATION ${CMAKE_SOURCE_DIR})
+  install(TARGETS libexpm RUNTIME DESTINATION ${CMAKE_SOURCE_DIR}/build/lib)
 endif(NOT WIN32)
 
+install(FILES ${src_h} DESTINATION ${CMAKE_SOURCE_DIR}/build/include)
 
 #INSTALL(FILES build/libglm.so DESTINATION lib)

@@ -1,5 +1,5 @@
-#ifndef EXPM_LAPACK_H
-#define EXPM_LAPACK_H
+#ifndef LIBEXPM_LAPACK_H
+#define LIBEXPM_LAPACK_H
 
 
 // FIXME

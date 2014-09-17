@@ -24,7 +24,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #include <R.h>
 #include <Rinternals.h>
 
-#include "../expm.h"
+#include <libexpm.h>
 
 
 SEXP R_expm(SEXP x, SEXP p)

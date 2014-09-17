@@ -21,12 +21,20 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 
+/**
+ * @file
+ * @brief Matrix exponentiation.
+ *
+ * Longer shit here.
+ */
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
 #include <math.h>
 
-#include "expm.h"
+#include "libexpm.h"
 #include "utils.h"
 #include "lapack.h"
 
@@ -217,6 +225,9 @@ static void matexp_pade(int n, const int p, double *A, double *N)
   ret     On exit, ret = expm(x).
 */
 
+/** 
+ * Exponentiation
+ */
 void matexp(const int p, const int n, double *x, double *ret)
 {
   int m;

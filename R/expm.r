@@ -1,4 +1,4 @@
-# p is the order of the Pade' approximation. expokit uses 6. For us, 0<p<14
+# 0<p<14 is the order of the Pade' approximation. expokit uses 6.
 expm <- function(x, p=6)
 {
   if (nrow(x) != ncol(x))

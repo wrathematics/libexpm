@@ -1,17 +1,19 @@
-all:
-	mkdir -p build;
-	cd build; \
-	mkdir include; \
-	cmake ..; \
-	make
+all: documentation libexpm R
 
-install:
+documentation:
+	doxygen libexpm.conf
+
+libexpm:
 	mkdir -p build;
 	cd build; \
 	mkdir include; \
 	cmake ..; \
 	make install
 
-clean:
-	rm -rf ./build
+R: libexpm
+	cd R; \
+	make
 
+clean:
+	rm -rf ./build ./docs/html/; \
+	cd R; make clean

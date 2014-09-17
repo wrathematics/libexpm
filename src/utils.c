@@ -99,6 +99,29 @@ double matnorm_1(const double *x, const int m, const int n)
 
 
 
+double vecnorm_inf(const int n, const double *x, int *ind)
+{
+  int i;
+  double tmp, norm = -1.;
+  
+  
+  // max(abs(x))
+  for (i=0; i<n; i++)
+  {
+    tmp = fabs(x[i]);
+    
+    if (tmp > norm)
+    {
+      norm = tmp;
+      *ind = i;
+    }
+  }
+  
+  return norm;
+}
+
+
+
 // ---------------------------------------------------------
 // Products
 // ---------------------------------------------------------
@@ -139,7 +162,7 @@ void matvecprod(bool trans, int pow, int n, double *a, double *b, double *c)
   }
   
   
-  tmp = malloc(n*sizeof(tmp));
+  tmp = malloc(n*sizeof(*tmp));
   
   for (i=0; i<pow-extra; i++)
   {
