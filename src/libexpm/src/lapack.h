@@ -5,6 +5,7 @@
 // BLAS
 void dgemm_(char *transa, char *transb, int *m, int *n, int *k, double *alpha, double *a, int *lda, double *b, int *ldb, double *beta, double *c, int *ldc);
 void dscal_(int *n, double *a, double *x, int *incx);
+void dgemv_(char *trans, int *m, int *n, double *alpha, double *a, int *lda, double *x, int *incx, double *beta, double *y, int *incy);
 
 // LAPACK
 void dlacpy_(char *uplo, int *m, int *n, double *a, int *lda, double *b, int *ldb);
