@@ -201,7 +201,7 @@ static void matexp_pade(int n, const int p, double *A, double *N)
   ipiv = calloc(n, sizeof(double));
   assert(ipiv != NULL);
   
-  F77_NAME(dgesv)(&n, &n, D, &n, ipiv, N, &n, &info);
+  dgesv_(&n, &n, D, &n, ipiv, N, &n, &info);
   
   
   free(B);
@@ -241,7 +241,7 @@ void matexp(const int p, const int n, double *x, double *ret)
     return matexp_pade(n, p, x, ret);
   
   tmp = 1. / ((double) m);
-  F77_NAME(dscal)(&nn, &tmp, x, &one);
+  dscal_(&nn, &tmp, x, &one);
   
   
   matexp_pade(n, p, x, ret);

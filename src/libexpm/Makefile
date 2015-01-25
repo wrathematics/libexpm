@@ -1,4 +1,4 @@
-all: documentation libexpm R
+all: documentation libexpm
 
 documentation:
 	doxygen libexpm.conf
@@ -9,10 +9,6 @@ libexpm:
 	mkdir include; \
 	cmake ..; \
 	make install
-
-R: libexpm
-	cd R; \
-	make
 
 clean:
 	rm -rf ./build ./docs/html/; \
