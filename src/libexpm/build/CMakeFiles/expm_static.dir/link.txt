@@ -1,0 +1,2 @@
+/usr/bin/ar cr libexpm_static.a  CMakeFiles/expm_static.dir/src/expm.c.o CMakeFiles/expm_static.dir/src/utils.c.o CMakeFiles/expm_static.dir/src/normest.c.o
+/usr/bin/ranlib libexpm_static.a

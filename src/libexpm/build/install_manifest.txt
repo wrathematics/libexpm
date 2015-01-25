@@ -1,0 +1,4 @@
+/home/iao/dev/expm/build/lib/libexpm.so
+/home/iao/dev/expm/build/include/lapack.h
+/home/iao/dev/expm/build/include/libexpm.h
+/home/iao/dev/expm/build/include/utils.h
