@@ -1,0 +1,5 @@
+useDynLib(expm)
+
+# All internal functions
+#exportPattern("^[[:alpha:]]+")
+
