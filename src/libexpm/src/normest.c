@@ -46,7 +46,7 @@ static inline double vecvecprod(int n, double *x, double *y)
   double dot;
   
   
-  F77_NAME(dgemm)(&transa, &transb, &ione, &ione, &n, &one, x, &n, y, &n, &zero, &dot, &ione);
+  dgemm_(&transa, &transb, &ione, &ione, &n, &one, x, &n, y, &n, &zero, &dot, &ione);
   
   return dot;
 }
