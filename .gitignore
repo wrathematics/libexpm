@@ -7,5 +7,5 @@
 *.status
 *~
 
-build/*
-docs/html/
+src/libexpm/build/*
+src/libexpm/docs/html

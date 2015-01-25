@@ -1,1 +1,0 @@
-/usr/bin/cc  -fPIC  -Wall -O3 -fPIC   -shared -Wl,-soname,libexpm.so -o libexpm.so CMakeFiles/libexpm.dir/src/expm.c.o CMakeFiles/libexpm.dir/src/utils.c.o CMakeFiles/libexpm.dir/src/normest.c.o /usr/lib/libf77blas.so.3gf /usr/lib/libatlas.so.3gf -llapack /usr/lib/libf77blas.so.3gf /usr/lib/libatlas.so.3gf -llapack 
