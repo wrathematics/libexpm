@@ -27,26 +27,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #include <libexpm.h>
 
 
-SEXP R_expm(SEXP x, SEXP p)
+double normest(const int pow, const int n, double *A);
+
+SEXP R_normest(SEXP x, SEXP pow)
 {
   const int n = nrows(x);
   int i;
-  double *x_cp;
-  SEXP R;
+  SEXP ret;
+  PROTECT(ret = allocVector(REALSXP, 1));
   
-  PROTECT(R = allocMatrix(REALSXP, n, n));
-  
-  x_cp = malloc(n*n*sizeof(x_cp));
-  
-  for (i=0; i<n*n; i++)
-    x_cp[i] = REAL(x)[i];
-  
-  
-  matexp(INTEGER(p)[0], n, x_cp, REAL(R));
-  
-  free(x_cp);
+  REAL(ret)[0] = normest(INTEGER(pow)[0], n, REAL(x));
   
   UNPROTECT(1);
-  return R;
+  return ret;
 }
 

@@ -46,7 +46,7 @@ static int matexp_scale_factor(const double *x, const int n)
   int i;
   const double theta[] = {1.5e-2, 2.5e-1, 9.5e-1, 2.1e0, 5.4e0};
   
-  const double x_1 = matnorm_1(x, n, n);
+  const double x_1 = matnorm_1(n, n, x);
   
   for (i=0; i<NTHETA; i++)
   {
@@ -74,7 +74,7 @@ static void matpow_by_squaring(double *A, int n, int b, double *P)
   
   if (b == 1)
   {
-    matcopy(n, A, P);
+    matcopy(n, n, A, P);
     return;
   }
   
@@ -87,12 +87,12 @@ static void matpow_by_squaring(double *A, int n, int b, double *P)
     if (b&1)
     {
       matprod(n, P, A, TMP);
-      matcopy(n, TMP, P);
+      matcopy(n, n, TMP, P);
     }
     
     b >>= 1;
     matprod(n, A, A, TMP);
-    matcopy(n, TMP, A);
+    matcopy(n, n, TMP, A);
   }
   
   free(TMP);
@@ -151,7 +151,7 @@ static void matexp_pade(int n, const int p, double *A, double *N)
   D = malloc(n*n * sizeof(double));
   assert(D != NULL);
   
-  matcopy(n, A, C);
+  matcopy(n, n, A, C);
   
   for (i=0; i<n*n; i++)
   {
@@ -246,7 +246,7 @@ void matexp(const int p, const int n, double *x, double *ret)
   
   matexp_pade(n, p, x, ret);
   
-  matcopy(n, ret, x);
+  matcopy(n, n, ret, x);
   
   matpow_by_squaring(x, n, m, ret);
 }

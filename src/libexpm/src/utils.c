@@ -1,4 +1,4 @@
-/* Copyright (C) 2013-2014 Drew Schmidt. All rights reserved.
+/* Copyright (C) 2013-2015 Drew Schmidt. All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions are met:
@@ -40,12 +40,11 @@
 // ---------------------------------------------------------
 
 // Copy A ONTO B, i.e. B = A
-void matcopy(int n, double *A, double *B)
+void matcopy(int m, int n, double *A, double *B)
 {
   char uplo = 'A';
   
-  
-  dlacpy_(&uplo, &n, &n, A, &n, B, &n);
+  dlacpy_(&uplo, &m, &n, A, &m, B, &m);
 }
 
 
@@ -54,7 +53,6 @@ void matcopy(int n, double *A, double *B)
 void mateye(const unsigned int n, double *a)
 {
   int i;
-  
   
   for (i=0; i<n*n; i++)
     a[i] = 0.0;
@@ -75,7 +73,7 @@ void mateye(const unsigned int n, double *a)
 
 
 // Full 1-norm
-double matnorm_1(const double *x, const int m, const int n)
+double matnorm_1(const int m, const int n, const double *x)
 {
   int i, j;
   double norm = -1.;
@@ -127,21 +125,19 @@ double vecnorm_inf(const int n, const double *x, int *ind)
 // ---------------------------------------------------------
 
 // C = A * B for square matrices
-void matprod(int n, double *a, double *b, double *c)
+void matprod(int n, double *A, double *B, double *C)
 {
   char trans = 'N';
   double one = 1.0, zero = 0.0;
   
-  
-  dgemm_(&trans, &trans, &n, &n, &n, &one, a, &n, b, &n, &zero, c, &n);
+  dgemm_(&trans, &trans, &n, &n, &n, &one, A, &n, B, &n, &zero, C, &n);
 }
 
 
 
-// Matrix a times vector b
-void matvecprod(bool trans, int pow, int n, double *a, double *b, double *c)
+// nx1 vector y = nxn Matrix A^pow times nx1 vector x
+void matvecprod(bool trans, int pow, int n, double *A, double *x, double *y)
 {
-  char notrans = 'N';
   char transa;
   int i;
   int ione = 1;
@@ -155,25 +151,30 @@ void matvecprod(bool trans, int pow, int n, double *a, double *b, double *c)
   else
     transa = 'N';
   
+  
   if (pow == 1)
   {
-    dgemm_(&transa, &notrans, &n, &ione, &n, &one, a, &n, b, &n, &zero, c, &n);
+    dgemv_(&transa, &n, &n, &one, A, &n, x, &ione, &zero, y, &ione);
     return;
   }
   
   
-  tmp = malloc(n*sizeof(*tmp));
+  tmp = malloc(n * sizeof(double));
+  for (i=0; i<n; i++)
+    y[i] = x[i];
   
-  for (i=0; i<pow-extra; i++)
+  for (i=0; i<(pow-extra)/2; i+=2)
   {
-    dgemm_(&transa, &notrans, &n, &ione, &n, &one, a, &n, tmp, &n, &zero, c, &n);
-    dgemm_(&transa, &notrans, &n, &ione, &n, &one, a, &n, c, &n, &zero, tmp, &n);
+    dgemv_(&transa, &n, &n, &one, A, &n, y, &ione, &zero, tmp, &ione);
+    dgemv_(&transa, &n, &n, &one, A, &n, tmp, &ione, &zero, y, &ione);
   }
   
+  
   if (extra)
-    dgemm_(&transa, &notrans, &n, &ione, &n, &one, a, &n, tmp, &n, &zero, c, &n);
+    dgemv_(&transa, &n, &n, &one, A, &n, tmp, &ione, &zero, y, &ione);
   else
-    matcopy(n, tmp, c);
+    matcopy(n, 1, tmp, y);
+  
   
   free(tmp);
 }

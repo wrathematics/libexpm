@@ -1,0 +1,3 @@
+#!/bin/sh
+
+make && cd R && make clean && make 

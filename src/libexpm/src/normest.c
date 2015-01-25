@@ -28,6 +28,8 @@
 #include "lapack.h"
 #include "utils.h"
 
+#define ITERMAX 9
+
 // Fortran codes for estimating the one-norm of a real or complex matrix, with applications to condition estimation (1988) 
 // by Nicholas J. Higham 
 
@@ -37,16 +39,15 @@
 // to 1-norm pseudospectra by Nicholas J. Higham and Francoise Tisseur
 
 
-// Don't want to bring fortran into this (for the wrapper for ddot), and no real reason to use dgemv over dgemm
+// Don't want to bring fortran into this (for the wrapper for ddot)
 static inline double vecvecprod(int n, double *x, double *y)
 {
-  char transa = 'T', transb = 'F';
+  char transa = 'T';
   int ione = 1;
   double one = 1.0, zero = 0.0;
   double dot;
   
-  
-  dgemm_(&transa, &transb, &ione, &ione, &n, &one, x, &n, y, &n, &zero, &dot, &ione);
+  dgemv_(&transa, &n, &ione, &one, x, &n, y, &ione, &zero, &dot, &ione);
   
   return dot;
 }
@@ -54,19 +55,84 @@ static inline double vecvecprod(int n, double *x, double *y)
 
 
 // Algorithm 2.1 from the Higham and Tisseur paper
-#define ITERMAX 9
-
-double normest(const int pow, const int n, double *A)
+double normest_2_1(const int pow, const int n, double *A)
 {
   int i, k = 0;
   int ind;
-  double tmp, norm;
+  double tmp, norm, norm_old = -1.;
   double ztx, znorm;
   double *x, *y, *s;
   
   
   if (pow == 1)
-    return matnorm_1(A, n, n);
+    return matnorm_1(n, n, A);
+  
+  x = malloc(n * sizeof(double));
+  y = malloc(n * sizeof(double));
+  s = malloc(n * sizeof(double));
+  
+  
+  tmp = 1.0 / (double) n;
+  for (i=0; i<n; i++)
+    x[i] = tmp;
+  
+  while (k < ITERMAX)
+  {
+    if (k > 1)
+      norm = norm_old;
+    
+    // y = A^pow x
+    matvecprod(false, pow, n, A, x, y);
+    
+    norm = matnorm_1(n, 1, y);
+    
+    if (norm == norm_old)
+      break;
+    
+    // s = sign(y)
+    for (i=0; i<n; i++)
+      s[i] = SGN(y[i]);
+    
+    // z = t(A)^pow s
+    matvecprod(true, pow, n, A, s, y);
+    
+    znorm = vecnorm_inf(n, y, &ind);
+    ztx = vecvecprod(n, y, x);
+    
+    if (znorm < ztx && k > 1)
+      break;
+    
+    // x = e_j, where j is such that |z_j| = ||z||_inf
+    for (i=0; i<n; i++)
+      x[i] = 0.0;
+    
+    x[ind] = 1.0;
+    
+    k++;
+  }
+  
+  
+  free(x);
+  free(y);
+  free(s);
+  
+  return norm;
+}
+
+
+
+// Algorithm 2.4 with t=1 from the Higham and Tisseur paper
+double normest(const int pow, const int n, double *A)
+{
+  int i, k = 0;
+  int ind;
+  double tmp, norm, norm_old = -1.;
+  double ztx, znorm;
+  double *x, *y, *s;
+  
+  
+  if (pow == 1)
+    return matnorm_1(n, n, A);
   
   x = malloc(n * sizeof(double));
   y = malloc(n * sizeof(double));
@@ -82,7 +148,15 @@ double normest(const int pow, const int n, double *A)
     // y = A^pow x
     matvecprod(false, pow, n, A, x, y);
     
-    norm = matnorm_1(y, n, 1);
+    norm = matnorm_1(n, 1, y);
+    
+    if (k > 1 && norm <= norm_old)
+    {
+      norm = norm_old;
+      break;
+    }
+    
+    norm_old = norm;
     
     // s = sign(y)
     for (i=0; i<n; i++)
@@ -94,7 +168,7 @@ double normest(const int pow, const int n, double *A)
     znorm = vecnorm_inf(n, y, &ind);
     ztx = vecvecprod(n, y, x);
     
-    if (znorm < ztx && k > 0)
+    if (znorm < ztx && k > 1)
       break;
     
     // x = e_j, where j is such that |z_j| = ||z||_inf
@@ -106,14 +180,12 @@ double normest(const int pow, const int n, double *A)
     k++;
   }
   
+  
   free(x);
   free(y);
   free(s);
   
   return norm;
 }
-
-
-
 
 
