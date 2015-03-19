@@ -1,12 +1,11 @@
-Package: expm
+Package: libexpm
 Version: 0.1.0
 License: BSD 2-clause License + file LICENSE
 Title: Matrix Exponentiation
 Description: TODO
 Depends: R (>= 2.14.0)
 Authors@R: c(person("Drew", "Schmidt", role = c("aut", "cre"), 
-        email = "wrathematics@gmail.com"), 
-        person("Wei-Chen", "Chen", role="aut"))
+    email = "wrathematics@gmail.com"))
 NeedsCompilation: yes
 ByteCompile: yes
 Maintainer: Drew Schmidt <wrathematics@gmail.com>

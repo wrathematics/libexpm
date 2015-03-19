@@ -1,4 +1,17 @@
-# 0<p<14 is the order of the Pade' approximation. expokit uses 6.
+#' Matrix Exponentiation
+#' 
+#' Matrix exponentiation via Pade' approximations.
+#' 
+#' @param x
+#' A numeric matrix.
+#' @param p
+#' Order of the Pade' approximation.  Should be between 1 and 13.
+#' 6 is typical.
+#' 
+#' @return
+#' exp(x)
+#' 
+#' @export
 expm <- function(x, p=6)
 {
   if (nrow(x) != ncol(x))
@@ -10,7 +23,7 @@ expm <- function(x, p=6)
   if (!is.double(x))
     storage.mode(x) <- "double"
   
-  exp <- .Call("R_expm", x, as.integer(p))
+  exp <- .Call(R_libexpm_expm, x, as.integer(p))
   
   return( exp )
 }
