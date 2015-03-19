@@ -1,5 +1,4 @@
-dyn.load("expm_wrap.so")
-source("expm.r")
+library(libexpm)
 
 n <- 250
 x <- matrix(rnorm(n*n), n, n)

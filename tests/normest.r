@@ -1,7 +1,7 @@
-dyn.load("expm_wrap.so")
-source("normest.r")
+library(libexpm)
 
-n <- 1000
+
+n <- 100
 x <- matrix(rnorm(n*n), n, n)
 
 
