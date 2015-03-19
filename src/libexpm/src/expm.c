@@ -1,4 +1,4 @@
-/* Copyright (C) 2013-2014 Drew Schmidt. All rights reserved.
+/* Copyright (C) 2013-2015 Drew Schmidt. All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions are met:
@@ -21,14 +21,6 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 
-/**
- * @file
- * @brief Matrix exponentiation.
- *
- * Longer shit here.
- */
-
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -37,6 +29,7 @@
 #include "libexpm.h"
 #include "utils.h"
 #include "lapack.h"
+#include "norm.h"
 
 
 #define NTHETA 5
@@ -44,9 +37,10 @@
 static int matexp_scale_factor(const double *x, const int n)
 {
   int i;
+  double x_1;
   const double theta[] = {1.5e-2, 2.5e-1, 9.5e-1, 2.1e0, 5.4e0};
   
-  const double x_1 = matnorm_1(n, n, x);
+  matnorm(NORM_ONE, n, n, x, &x_1);
   
   for (i=0; i<NTHETA; i++)
   {
@@ -212,23 +206,28 @@ static void matexp_pade(int n, const int p, double *A, double *N)
 
 
 
-/*
-  n       Number of rows/cols of (square) matrix x.
-  
-  p       Order of the Pade' approximation. 0 < p <= 13.
-  
-  t       Scaling factor for x (t=1 canonical).
-  
-  x       Input (square) matrix.  On function exit, the values
-          in x are garbage.
-  
-  ret     On exit, ret = expm(x).
-*/
-
-/** 
- * Exponentiation
+/**
+ * @file
+ * @brief 
+ * Matrix exponentiation via Pade' approximations
+ *
+ * @param n
+ * Number of rows/cols of (square) matrix x.
+ * @param p
+ * Order of the Pade' approximation.  Must satisfy 0<p<=13.  
+ * Useful values are p=6, 8, 12.
+ * @param t
+ * Scaling factor for x (t=1 canonical).
+ * @param x
+ * Modified Input (square) matrix, stored in column-major format.
+ * On successful function return, the values of x are garbage.
+ * @param ret
+ * On successful return, ret = expm(x).
+ *
+ * @return
+ * The return value indicates the status of the function.
  */
-void matexp(const int p, const int n, double *x, double *ret)
+int libexpm_expm(const int p, const int n, double *x, double *ret)
 {
   int m;
   int nn = n*n;
@@ -238,7 +237,10 @@ void matexp(const int p, const int n, double *x, double *ret)
   m = matexp_scale_factor(x, n);
   
   if (m == 0)
-    return matexp_pade(n, p, x, ret);
+  {
+    matexp_pade(n, p, x, ret);
+    return 0;
+  }
   
   tmp = 1. / ((double) m);
   dscal_(&nn, &tmp, x, &one);
@@ -249,6 +251,8 @@ void matexp(const int p, const int n, double *x, double *ret)
   matcopy(n, n, ret, x);
   
   matpow_by_squaring(x, n, m, ret);
+  
+  return 0;
 }
 
 

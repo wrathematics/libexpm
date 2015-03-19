@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 Drew Schmidt. All rights reserved.
+/* Copyright (C) 2014-2015 Drew Schmidt. All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions are met:
@@ -27,6 +27,7 @@
 
 #include "lapack.h"
 #include "utils.h"
+#include "norm.h"
 
 #define ITERMAX 9
 
@@ -54,8 +55,25 @@ static inline double vecvecprod(int n, double *x, double *y)
 
 
 
-// Algorithm 2.1 from the Higham and Tisseur paper
-double normest_2_1(const int pow, const int n, double *A)
+/**
+ * @file
+ * @brief 
+ * Estimation of 1-norm of A^pow.
+ * 
+ * @details
+ * Algorithm 2.1 from the Higham and Tisseur paper.
+ *
+ * @param pow
+ * Input. Power of matrix A.
+ * @param n
+ * Input. Number of rows/cols of square matrix A.
+ * @param A
+ * Input. Square matrix.
+ * 
+ * @return
+ * 1-norm estimation.
+ */
+double libexpm_normest_2_1(const int pow, const int n, double *A)
 {
   int i, k = 0;
   int ind;
@@ -65,7 +83,10 @@ double normest_2_1(const int pow, const int n, double *A)
   
   
   if (pow == 1)
-    return matnorm_1(n, n, A);
+  {
+    matnorm(NORM_ONE, n, n, A, &norm);
+    return norm;
+  }
   
   x = malloc(n * sizeof(double));
   y = malloc(n * sizeof(double));
@@ -84,7 +105,7 @@ double normest_2_1(const int pow, const int n, double *A)
     // y = A^pow x
     matvecprod(false, pow, n, A, x, y);
     
-    norm = matnorm_1(n, 1, y);
+    matnorm(NORM_ONE, n, 1, y, &norm);
     
     if (norm == norm_old)
       break;
@@ -96,7 +117,8 @@ double normest_2_1(const int pow, const int n, double *A)
     // z = t(A)^pow s
     matvecprod(true, pow, n, A, s, y);
     
-    znorm = vecnorm_inf(n, y, &ind);
+    
+    vecnorm_inf(n, 1, y, &znorm, &ind);
     ztx = vecvecprod(n, y, x);
     
     if (znorm < ztx && k > 1)
@@ -121,8 +143,25 @@ double normest_2_1(const int pow, const int n, double *A)
 
 
 
-// Algorithm 2.4 with t=1 from the Higham and Tisseur paper
-double normest(const int pow, const int n, double *A)
+/**
+ * @file
+ * @brief 
+ * Estimation of 1-norm of A^pow.
+ * 
+ * @details
+ * Algorithm 2.4 with t=1 from the Higham and Tisseur paper.
+ *
+ * @param pow
+ * Input. Power of matrix A.
+ * @param n
+ * Input. Number of rows/cols of square matrix A.
+ * @param A
+ * Input. Square matrix.
+ * 
+ * @return
+ * 1-norm estimation.
+ */
+double libexpm_normest_2_4(const int pow, const int n, double *A)
 {
   int i, k = 0;
   int ind;
@@ -132,7 +171,10 @@ double normest(const int pow, const int n, double *A)
   
   
   if (pow == 1)
-    return matnorm_1(n, n, A);
+  {
+    matnorm(NORM_ONE, n, n, A, &norm);
+    return norm;
+  }
   
   x = malloc(n * sizeof(double));
   y = malloc(n * sizeof(double));
@@ -148,7 +190,7 @@ double normest(const int pow, const int n, double *A)
     // y = A^pow x
     matvecprod(false, pow, n, A, x, y);
     
-    norm = matnorm_1(n, 1, y);
+    matnorm(NORM_ONE, n, 1, y, &norm);
     
     if (k > 1 && norm <= norm_old)
     {
@@ -165,7 +207,7 @@ double normest(const int pow, const int n, double *A)
     // z = t(A)^pow s
     matvecprod(true, pow, n, A, s, y);
     
-    znorm = vecnorm_inf(n, y, &ind);
+    vecnorm_inf(n, 1, y, &znorm, &ind);
     ztx = vecvecprod(n, y, x);
     
     if (znorm < ztx && k > 1)

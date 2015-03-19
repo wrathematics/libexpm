@@ -39,17 +39,43 @@
 // Misc
 // ---------------------------------------------------------
 
-// Copy A ONTO B, i.e. B = A
-void matcopy(int m, int n, double *A, double *B)
+
+/**
+ * @file
+ * @brief 
+ * Copy matrix x ONTO y (y = x).
+ *
+ * @details
+ * Simple wrapper around dlacpy.
+ *
+ * @param m
+ * Number of rows of matrix x.
+ * @param n
+ * Number of cols of matrix x.
+ * @param x
+ * Input matrix.
+ * @param y
+ * Output matrix.
+ */
+void matcopy(int m, int n, double *x, double *y)
 {
   char uplo = 'A';
   
-  dlacpy_(&uplo, &m, &n, A, &m, B, &m);
+  dlacpy_(&uplo, &m, &n, x, &m, y, &m);
 }
 
 
 
-// Identity matrix
+/**
+ * @file
+ * @brief 
+ * Construct identity matrix.
+ *
+ * @param n
+ * Number of rows/cols of (square) matrix a.
+ * @param a
+ * Output matrix.
+ */
 void mateye(const unsigned int n, double *a)
 {
   int i;
@@ -68,63 +94,24 @@ void mateye(const unsigned int n, double *a)
 
 
 // ---------------------------------------------------------
-// Explicit 1-Norms
-// ---------------------------------------------------------
-
-
-// Full 1-norm
-double matnorm_1(const int m, const int n, const double *x)
-{
-  int i, j;
-  double norm = -1.;
-  double tmp;
-  
-  
-  // max(colSums(abs(x))) 
-  for (j=0; j<n; j++)
-  {
-    tmp = 0;
-    
-    for (i=0; i<m; i++)
-      tmp += fabs(x[i + j*m]);
-    
-    if (tmp > norm)
-      norm = tmp;
-  }
-  
-  return norm;
-}
-
-
-
-double vecnorm_inf(const int n, const double *x, int *ind)
-{
-  int i;
-  double tmp, norm = -1.;
-  
-  
-  // max(abs(x))
-  for (i=0; i<n; i++)
-  {
-    tmp = fabs(x[i]);
-    
-    if (tmp > norm)
-    {
-      norm = tmp;
-      *ind = i;
-    }
-  }
-  
-  return norm;
-}
-
-
-
-// ---------------------------------------------------------
 // Products
 // ---------------------------------------------------------
 
-// C = A * B for square matrices
+/**
+ * @file
+ * @brief 
+ * Square matrix product.  Sets C = A*B
+ * 
+ * @details
+ * Simple wrapper for dgemm for square matrices.
+ *
+ * @param n
+ * Number of rows/cols of (square) matrices A, B, C.
+ * @param A,B
+ * Input matrices.
+ * @param C
+ * Output matrix.
+ */
 void matprod(int n, double *A, double *B, double *C)
 {
   char trans = 'N';
@@ -135,7 +122,28 @@ void matprod(int n, double *A, double *B, double *C)
 
 
 
-// nx1 vector y = nxn Matrix A^pow times nx1 vector x
+/**
+ * @file
+ * @brief 
+ * y = A^pow * x
+ * 
+ * @details
+ * Successively apply A (or A^T) to vector x, pow times.  dgemv is 
+ * used for the products.
+ *
+ * @param trans
+ * Input.  Determines if A or A^T is used.
+ * @param pow
+ * Power of matrix A.
+ * @param n
+ * Length of vectors x and y, and the number of rows/cols of square matrix A.
+ * @param A
+ * Input
+ * @param x
+ * 
+ * @param y
+ * Output
+ */
 void matvecprod(bool trans, int pow, int n, double *A, double *x, double *y)
 {
   char transa;
@@ -178,5 +186,46 @@ void matvecprod(bool trans, int pow, int n, double *A, double *x, double *y)
   
   free(tmp);
 }
+
+
+
+
+
+
+
+
+
+
+  // max(rowSums(abs(x)))
+int vecnorm_inf(const int m, const int n, const double *x, double *norm, int *ind)
+{
+  int i, j;
+  double *tmp;
+  
+  tmp = calloc(m, sizeof(*tmp));
+  
+  // tmp = rowSums(abs(x))
+  for (j=0; j<n; j++)
+  {
+    for (i=0; i<m; i++)
+      tmp[i] += fabs(x[i + j*m]);
+  }
+  
+  *norm = tmp[0];
+  *ind = 0;
+  for (i=1; i<m; i++)
+  {
+    if (tmp[i] > *norm)
+    {
+      *norm = tmp[i];
+      *ind = i;
+    }
+  }
+  
+  free(tmp);
+  
+  return 0;
+}
+
 
 

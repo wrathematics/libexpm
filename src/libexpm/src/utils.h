@@ -13,9 +13,6 @@
 void matcopy(int m, int n, double *A, double *B);
 void mateye(const unsigned int n, double *a);
 
-double matnorm_1(const int m, const int n, const double *x);
-double vecnorm_inf(const int n, const double *x, int *ind);
-
 void matprod(int n, double *A, double *B, double *C);
 void matvecprod(bool trans, int pow, int n, double *A, double *x, double *y);
 
