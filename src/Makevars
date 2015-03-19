@@ -1,0 +1,22 @@
+PKG_CFLAGS = -g -w
+
+LIBEXPM_OBJS = \
+		libexpm/src/expm.o \
+		libexpm/src/norm.o \
+		libexpm/src/normest.o \
+		libexpm/src/utils.o
+
+R_OBJS   = wrappers.o
+
+OBJECTS = $(LIBEXPM_OBJS) $(R_OBJS)
+
+### Start making here.
+all: $(SHLIB)
+
+$(SHLIB): $(OBJECTS)
+
+clean:
+		@rm -rf *.o *.d *.rc *.so* *.dylib *.dll *.a *.lib \
+				Makedeps Makevars $(SHLIB) $(OBJECTS)
+
+
