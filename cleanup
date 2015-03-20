@@ -8,6 +8,7 @@ rm -rf ./src/Makedeps
 rm -rf ./src/*.dylib
 rm -rf ./src/*.so*
 rm -rf ./src/*.o
+rm -rf ./src/libexpm/src/*.o
 rm -rf ./src/*.d
 rm -rf ./src/*.dll
 rm -rf ./src/*.a
