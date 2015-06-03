@@ -23,7 +23,7 @@ expm <- function(x, p=6)
   if (!is.double(x))
     storage.mode(x) <- "double"
   
-  exp <- .Call(R_libexpm_expm, x, as.integer(p))
+  exp <- .Call(R_libexpm_expm_5_1, x, as.integer(p))
   
   return( exp )
 }

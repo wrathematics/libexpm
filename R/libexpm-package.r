@@ -12,7 +12,7 @@
 #' @author Drew Schmidt
 #' @references Project home page: \url{http://github.com/wrathematics/libexpm}
 #' 
-#' @useDynLib libexpm, R_libexpm_normest, R_libexpm_expm
+#' @useDynLib libexpm, R_libexpm_normest, R_libexpm_expm_3_1, R_libexpm_expm_5_1
 #' 
 #' @keywords Package
 NULL

@@ -126,7 +126,7 @@ const double matexp_pade_coefs[14] =
 
 
 // Exponentiation via Pade' expansion
-static void matexp_pade(int n, const int p, double *A, double *N)
+static void matexp_pade(const int n, const int p, double *restrict A, double *restrict N)
 {
   int i, j, info = 0;
   int *ipiv;
@@ -134,24 +134,23 @@ static void matexp_pade(int n, const int p, double *A, double *N)
   double tmp, tmpj;
   double *B, *C, *D;
   
+  if (n <= 0) return;
+  
   // Power of A
-  B = calloc(n*n, sizeof(double));
+  B = calloc(n*n, sizeof(*B));
   assert(B != NULL);
   
   // Temporary storage for matrix multiplication
-  C = malloc(n*n * sizeof(double));
+  C = malloc(n*n * sizeof(*C));
   assert(C != NULL);
   
-  D = malloc(n*n * sizeof(double));
+  D = calloc(n*n, sizeof(*D));
   assert(D != NULL);
   
   matcopy(n, n, A, C);
   
-  for (i=0; i<n*n; i++)
-  {
-    N[i] = 0.0;
-    D[i] = 0.0;
-  }
+  memset(D, 0, n*n*sizeof(*D));
+  
   
   i = 0;
   while (i < n*n)
@@ -192,7 +191,7 @@ static void matexp_pade(int n, const int p, double *A, double *N)
   }
   
   // R <- inverse(D) %*% N
-  ipiv = calloc(n, sizeof(double));
+  ipiv = calloc(n, sizeof(*ipiv));
   assert(ipiv != NULL);
   
   dgesv_(&n, &n, D, &n, ipiv, N, &n, &info);
@@ -209,8 +208,12 @@ static void matexp_pade(int n, const int p, double *A, double *N)
 /**
  * @file
  * @brief 
- * Matrix exponentiation via Pade' approximations
- *
+ * Matrix exponentiation via scaling and squaring.
+ * 
+ * @description
+ * Algorithm 3.1 from the paper "A New Scaling and Squaring Algorithm
+ * for the Matrix Exponential" by Awad H. Al-Mohy and Nicholas J. Higham.
+ * 
  * @param n
  * Number of rows/cols of (square) matrix x.
  * @param p
@@ -227,7 +230,7 @@ static void matexp_pade(int n, const int p, double *A, double *N)
  * @return
  * The return value indicates the status of the function.
  */
-int libexpm_expm(const int p, const int n, double *x, double *ret)
+int libexpm_expm_3_1(const int p, const int n, double *restrict x, double *restrict ret)
 {
   int m;
   int nn = n*n;
@@ -255,4 +258,60 @@ int libexpm_expm(const int p, const int n, double *x, double *ret)
   return 0;
 }
 
+
+
+
+
+/**
+ * @file
+ * @brief 
+ * Matrix exponentiation via new scaling and squaring algorithm.
+ * 
+ * @description
+ * Algorithm 5.1 from the paper "A New Scaling and Squaring Algorithm
+ * for the Matrix Exponential" by Awad H. Al-Mohy and Nicholas J. Higham.
+ * 
+ * @param n
+ * Number of rows/cols of (square) matrix x.
+ * @param p
+ * Order of the Pade' approximation.  Must satisfy 0<p<=13.  
+ * Useful values are p=6, 8, 12.
+ * @param t
+ * Scaling factor for x (t=1 canonical).
+ * @param x
+ * Modified Input (square) matrix, stored in column-major format.
+ * On successful function return, the values of x are garbage.
+ * @param ret
+ * On successful return, ret = expm(x).
+ *
+ * @return
+ * The return value indicates the status of the function.
+ */
+int libexpm_expm_5_1(const int p, const int n, double *restrict x, double *restrict ret)
+{
+  int m;
+  int nn = n*n;
+  int one = 1;
+  double tmp;
+  
+  m = matexp_scale_factor(x, n);
+  
+  if (m == 0)
+  {
+    matexp_pade(n, p, x, ret);
+    return 0;
+  }
+  
+  tmp = 1. / ((double) m);
+  dscal_(&nn, &tmp, x, &one);
+  
+  
+  matexp_pade(n, p, x, ret);
+  
+  matcopy(n, n, ret, x);
+  
+  matpow_by_squaring(x, n, m, ret);
+  
+  return 0;
+}
 

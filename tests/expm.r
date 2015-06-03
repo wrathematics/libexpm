@@ -1,6 +1,7 @@
 library(libexpm)
 
 n <- 250
+n <- 10
 x <- matrix(rnorm(n*n), n, n)
 
 t1 <- system.time(exp1 <- expm(x))[3]
@@ -12,3 +13,4 @@ t1
 t2
 
 all.equal(exp1, as.matrix(exp2), check.attributes=FALSE)
+

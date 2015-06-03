@@ -17,8 +17,8 @@ module norm
   bind(c, name='matnorm')
     implicit none
     ! In/Out
-    integer(kind=c_int), intent(in) :: norm
-    integer(kind=c_int), intent(in) :: m, n
+    integer(kind=c_int), intent(in), value :: norm
+    integer(kind=c_int), intent(in), value :: m, n
     real(kind=c_double), intent(in) :: x(m, n)
     real(kind=c_double), intent(out) :: ret
     integer(kind=c_int) :: matnorm

@@ -61,8 +61,10 @@ static inline double vecvecprod(int n, double *x, double *y)
  * Estimation of 1-norm of A^pow.
  * 
  * @details
- * Algorithm 2.1 from the Higham and Tisseur paper.
- *
+ * Algorithm 2.1 from "A block algorithm for matrix 1-norm estimation 
+ * with an application to 1-norm pseudospectra" by Nicholas J. Higham
+ * and Francoise Tisseur.
+ * 
  * @param pow
  * Input. Power of matrix A.
  * @param n
@@ -149,8 +151,10 @@ double libexpm_normest_2_1(const int pow, const int n, double *A)
  * Estimation of 1-norm of A^pow.
  * 
  * @details
- * Algorithm 2.4 with t=1 from the Higham and Tisseur paper.
- *
+ * Algorithm 2.4 from "A block algorithm for matrix 1-norm estimation 
+ * with an application to 1-norm pseudospectra" by Nicholas J. Higham
+ * and Francoise Tisseur.
+ * 
  * @param pow
  * Input. Power of matrix A.
  * @param n

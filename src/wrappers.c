@@ -23,7 +23,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 #include <R.h>
 #include <Rinternals.h>
-
 #include "libexpm/src/libexpm.h"
 
 
@@ -42,7 +41,7 @@ SEXP R_libexpm_normest(SEXP x, SEXP pow)
 
 
 
-SEXP R_libexpm_expm(SEXP x, SEXP p)
+SEXP R_libexpm_expm_3_1(SEXP x, SEXP p)
 {
   const int n = nrows(x);
   int i;
@@ -51,12 +50,33 @@ SEXP R_libexpm_expm(SEXP x, SEXP p)
   
   PROTECT(R = allocMatrix(REALSXP, n, n));
   
-  x_cp = malloc(n*n*sizeof(x_cp));
+  x_cp = malloc(n*n * sizeof(*x_cp));
+  memcpy(x_cp, REAL(x), n*n*sizeof(*x_cp));
   
-  for (i=0; i<n*n; i++)
-    x_cp[i] = REAL(x)[i];
+  libexpm_expm_3_1(INTEGER(p)[0], n, x_cp, REAL(R));
   
-  libexpm_expm(INTEGER(p)[0], n, x_cp, REAL(R));
+  free(x_cp);
+  
+  UNPROTECT(1);
+  return R;
+}
+
+
+
+
+SEXP R_libexpm_expm_5_1(SEXP x, SEXP p)
+{
+  const int n = nrows(x);
+  int i;
+  double *x_cp;
+  SEXP R;
+  
+  PROTECT(R = allocMatrix(REALSXP, n, n));
+  
+  x_cp = malloc(n*n * sizeof(*x_cp));
+  memcpy(x_cp, REAL(x), n*n*sizeof(*x_cp));
+  
+  libexpm_expm_5_1(INTEGER(p)[0], n, x_cp, REAL(R));
   
   free(x_cp);
   
